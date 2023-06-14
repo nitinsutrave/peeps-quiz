@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Peeps Quiz</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/md5.js"></script>
+</head>
+<style>
+  body {
+    font-size: 20px;
+  }
+
+  .loader-icon {
+    border: 10px solid lightgray; /* Light grey */
+    border-top: 10px solid lightsteelblue; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    animation: spin 2s linear infinite;
+  }
+
+  #loader {
+    width: 100vw;
+    height: 100vh;
+    z-index: 50;
+    position: absolute;
+    padding-top: 50px;
+    background-color: white;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+<body>
+  <div id="loader">
+    <div class="loader-icon">
+    </div>
+  </div>
+
+  <div id="landing_box" class="container">
+    <div class="row">
+      <div class="one-half column" style="margin-top: 25%">
+        <h4>Welcome to Peeps Quiz!</h4>
+        <button onclick="signInWithGoogle()">Sign In With Google</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="question_box" class="container">
+    <div class="row" >
+      <div class="column" style="margin-top: 75px;">
+        <p id="questionId"></p>
+      </div>
+    </div>
+    <div class="row">
+      <div 
+        class="column" 
+        style="margin-top: 25px; margin-bottom: 15px; min-height: 400px; border-width: 0 0 2px 0; border-style: solid; border-color: blanchedalmond;"
+      >
+        <div id="questionText">
+        </div>
+      </div>
+    </div>
+    <div class="row" >
+      <div class="column">
+        <input id="answerText"></input>
+      </div>
+    </div>
+    <div class="row">
+      <div class="column">
+        <button onclick="verifyAnswer()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDEBtcXQuimLhBAVAzLZboVWtb6JbZvzAE",
+      authDomain: "peeps-quiz.firebaseapp.com",
+      projectId: "peeps-quiz",
+      storageBucket: "peeps-quiz.appspot.com",
+      messagingSenderId: "434813390575",
+      appId: "1:434813390575:web:c0862065f43f7cb442151a",
+      measurementId: "G-JMN3FXWQKC"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    var user = firebase.auth().currentUser;
+
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+          user = result.user;
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+        });
+    }
+
+    function verifyAnswer () {
+      const hash = CryptoJS.MD5(document.getElementById("answerText").value);
+      if (hash == questionData.answer) {
+        alert('You got that right!');
+      } else {
+        alert('Oops! Try again!');
+      }
+    }
+
+    var questionData = {}
+
+    fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/questionoftheday?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
+      .then(response => {
+        return response.json();
+      })
+      .then(questionDataResponse => {
+        questionData.question = questionDataResponse[0].question;
+        questionData.answer = questionDataResponse[0].answer;
+        questionData.questionId = questionDataResponse[0].questionId;
+
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            document.getElementById("questionText").innerHTML = questionData.question;
+            document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
+
+            document.getElementById("landing_box").hidden = true;
+            document.getElementById("question_box").hidden = false;
+            document.getElementById("loader").hidden = true;
+          } else {
+            document.getElementById("landing_box").hidden = false;
+            document.getElementById("question_box").hidden = true;
+            document.getElementById("loader").hidden = true;
+          }
+        });
+      })
+  </script>
+</body>
+</html>
