@@ -59,7 +59,10 @@
     <div class="row">
       <div class="one-half column" style="margin-top: 25%">
         <h4>Welcome to Peeps Quiz!</h4>
+        <br />
         <button onclick="signInWithGoogle()">Sign In With Google</button>
+        <br />
+        <a style="font-size: 14px; color: black; text-decoration: underline;" onclick="bypassLogin()">Continue without signing in</a>
       </div>
     </div>
   </div>
@@ -126,6 +129,11 @@
       }
     }
 
+    function bypassLogin () {
+      document.getElementById("landing_box").hidden = true;
+      document.getElementById("question_box").hidden = false;
+    }
+
     var questionData = {}
 
     fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/questionoftheday?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
@@ -137,11 +145,11 @@
         questionData.answer = questionDataResponse[0].answer;
         questionData.questionId = questionDataResponse[0].questionId;
 
+        document.getElementById("questionText").innerHTML = questionData.question;
+          document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
+
         firebase.auth().onAuthStateChanged((user) => {
           if (user) {
-            document.getElementById("questionText").innerHTML = questionData.question;
-            document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
-
             document.getElementById("landing_box").hidden = true;
             document.getElementById("question_box").hidden = false;
             document.getElementById("loader").hidden = true;
