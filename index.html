@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
 
-  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="icon" type="image/png" href="images/favicon.ico">
 
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
@@ -186,7 +186,7 @@
       console.log(ans);
 
       let hash = CryptoJS.MD5(ans);
-      if (hash == questionData.answer) {
+      if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
         // alert('You got that right!');
         showSuccess();
       } else {
@@ -194,7 +194,7 @@
           ans = ans.substring(0, ans.length - 1);
           hash = CryptoJS.MD5(document.getElementById("answerText").value);
         }
-        if (hash == questionData.answer) {
+        if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
           showSuccess();
         } else {
           showFailure();
@@ -231,9 +231,9 @@
       document.getElementById("failurepop").style.display = "none";
     }
 
-    // if (!navigator.canShare) {
-    //   document.getElementById("sharebutton").hidden = true;
-    // }
+    if (!navigator.canShare) {
+      document.getElementById("sharebutton").hidden = true;
+    }
 
     var questionData = {}
 
