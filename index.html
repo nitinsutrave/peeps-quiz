@@ -193,7 +193,7 @@
       } else {
         if (ans.length > 0 && ans.charAt(ans.length - 1) == 's') {
           ans = ans.substring(0, ans.length - 1);
-          hash = CryptoJS.MD5(document.getElementById("answerText").value);
+          hash = CryptoJS.MD5(ans);
         }
         if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
           showSuccess();
