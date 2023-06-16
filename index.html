@@ -103,13 +103,14 @@
   <div id="question_box" class="container">
     <div class="row" >
       <div class="column" style="margin-top: 75px;">
-        <p id="questionId"></p>
+        <b><div id="questionId"></div></b>
+        <div id="questionTimer" style="font-size: 16px;"></div>
       </div>
     </div>
     <div class="row">
       <div 
         class="column" 
-        style="margin-top: 25px; margin-bottom: 15px; min-height: 400px; border-width: 0 0 2px 0; border-style: solid; border-color: blanchedalmond;"
+        style="margin-top: 20px; margin-bottom: 15px; min-height: 400px; border-width: 0 0 2px 0; border-style: solid; border-color: blanchedalmond;"
       >
         <div id="questionText">
         </div>
@@ -186,16 +187,20 @@
         });
     }
 
+    var questionData = {}
+    var lastQuestionData = {}
+    var intervalTimerId;
+
+    var answerTimestamp;
     function verifyAnswer () {
       let ans = String(document.getElementById("answerText").value);
       ans = ans.toLowerCase();
       ans = ans.replace(/\s/g, '');
 
-      console.log(ans);
-
       let hash = CryptoJS.MD5(ans);
       if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
         // alert('You got that right!');
+        if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
         showSuccess();
       } else {
         if (ans.length > 0 && ans.charAt(ans.length - 1) == 's') {
@@ -203,6 +208,7 @@
           hash = CryptoJS.MD5(ans);
         }
         if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
+          if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
           showSuccess();
         } else {
           showFailure();
@@ -213,7 +219,7 @@
     function shareSuccess () {
       navigator.share({
         title: "Peeps Quiz Answered!",
-        text: "I got the answer for today's daily quiz! You should try it out too!",
+        text: "I got the answer for today's daily quiz with " + answerTimestamp + " hours to go! You should try it out too!",
         url: "https://quiz.rack51.com"
       });
     }
@@ -239,12 +245,13 @@
       document.getElementById("failurepop").style.display = "none";
     }
 
+    function getTimeLeftString (seconds) {
+      return new Date(seconds * 1000).toISOString().substring(11, 19)
+    }
+
     if (!navigator.canShare) {
       document.getElementById("sharebutton").hidden = true;
     }
-
-    var questionData = {}
-    var lastQuestionData = {}
 
     fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/lastquestion?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
       .then(response => {
@@ -266,9 +273,17 @@
             questionData.question = questionDataResponse[0].question;
             questionData.answer = questionDataResponse[0].answer;
             questionData.questionId = questionDataResponse[0].questionId;
+            questionData.ttl = questionDataResponse[0].ttl;
 
             document.getElementById("questionText").innerHTML = questionData.question;
             document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
+            document.getElementById("questionTimer").innerHTML = "Time Left " + getTimeLeftString(questionData.ttl);
+
+            if (intervalTimerId) clearInterval(intervalTimerId);
+            intervalTimerId = setInterval(function () {
+              questionData.ttl = Math.max(0, questionData.ttl - 1);
+              document.getElementById("questionTimer").innerHTML = "Time Left " + getTimeLeftString(questionData.ttl);
+            }, 998)
 
             firebase.auth().onAuthStateChanged((user) => {
               if (user) {
