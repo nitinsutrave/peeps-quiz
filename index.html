@@ -126,6 +126,13 @@
         <!-- <p style="font-size: 14px;"><i>Answers are in small case and without spaces in case of multiple words</i></p> -->
       </div>
     </div>
+    <div style="font-size: 16px; margin-top: 25px; margin-bottom: 40px; border-width: 2px 0 0 0; border-style: solid; border-color: blanchedalmond;">
+      <b><div>Yesterday's Question:</div></b>
+      <i><div id="lastQuestion"></div></i>
+      <br />
+      <b><div>Answer:</div></b>
+      <i><div id="lastAnswer"></div></i>
+    </div>
   </div>
 
   <div class="popup" id="successpop">
@@ -237,31 +244,70 @@
     }
 
     var questionData = {}
+    var lastQuestionData = {}
 
-    fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/questionoftheday?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
+    fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/lastquestion?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
       .then(response => {
         return response.json();
       })
-      .then(questionDataResponse => {
-        questionData.question = questionDataResponse[0].question;
-        questionData.answer = questionDataResponse[0].answer;
-        questionData.questionId = questionDataResponse[0].questionId;
+      .then(lastQuestionDataResponse => {
+        lastQuestionData.question = lastQuestionDataResponse[0].question
+        lastQuestionData.answer = lastQuestionDataResponse[0].answer
 
-        document.getElementById("questionText").innerHTML = questionData.question;
-          document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
-
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            document.getElementById("landing_box").hidden = true;
-            document.getElementById("question_box").hidden = false;
-            document.getElementById("loader").hidden = true;
-          } else {
-            document.getElementById("landing_box").hidden = false;
-            document.getElementById("question_box").hidden = true;
-            document.getElementById("loader").hidden = true;
-          }
-        });
+        document.getElementById("lastQuestion").innerHTML = lastQuestionData.question;
+        document.getElementById("lastAnswer").innerHTML = lastQuestionData.answer;
       })
+      .then(() => {
+        fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/questionoftheday?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
+          .then(response => {
+            return response.json();
+          })
+          .then(questionDataResponse => {
+            questionData.question = questionDataResponse[0].question;
+            questionData.answer = questionDataResponse[0].answer;
+            questionData.questionId = questionDataResponse[0].questionId;
+
+            document.getElementById("questionText").innerHTML = questionData.question;
+            document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
+
+            firebase.auth().onAuthStateChanged((user) => {
+              if (user) {
+                document.getElementById("landing_box").hidden = true;
+                document.getElementById("question_box").hidden = false;
+                document.getElementById("loader").hidden = true;
+              } else {
+                document.getElementById("landing_box").hidden = false;
+                document.getElementById("question_box").hidden = true;
+                document.getElementById("loader").hidden = true;
+              }
+            });
+          })
+      })
+
+    // fetch('https://yznvnlwilywqqfebsfvg.supabase.co/rest/v1/questionoftheday?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bnZubHdpbHl3cXFmZWJzZnZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY3MDU2NTMsImV4cCI6MjAwMjI4MTY1M30.e3aSFmUruJOz8xT4W-PQsl5qmTsk8hDIA32AYLNUQFk')
+    //   .then(response => {
+    //     return response.json();
+    //   })
+    //   .then(questionDataResponse => {
+    //     questionData.question = questionDataResponse[0].question;
+    //     questionData.answer = questionDataResponse[0].answer;
+    //     questionData.questionId = questionDataResponse[0].questionId;
+
+    //     document.getElementById("questionText").innerHTML = questionData.question;
+    //       document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
+
+    //     firebase.auth().onAuthStateChanged((user) => {
+    //       if (user) {
+    //         document.getElementById("landing_box").hidden = true;
+    //         document.getElementById("question_box").hidden = false;
+    //         document.getElementById("loader").hidden = true;
+    //       } else {
+    //         document.getElementById("landing_box").hidden = false;
+    //         document.getElementById("question_box").hidden = true;
+    //         document.getElementById("loader").hidden = true;
+    //       }
+    //     });
+    //   })
   </script>
 </body>
 </html>
