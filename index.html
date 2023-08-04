@@ -191,7 +191,6 @@
     var questionData = {}
 
     function getCookie(cName) {
-      console.log("here")
       const name = cName + "=";
       const cDecoded = decodeURIComponent(document.cookie); //to be careful
       const cArr = cDecoded .split('; ');
@@ -199,9 +198,6 @@
       cArr.forEach(val => {
           if (val.indexOf(name) === 0) res = val.substring(name.length);
       })
-      console.log(name)
-      console.log(cArr)
-      console.log(res)
       return res;
     }
 
@@ -209,14 +205,12 @@
     var intervalTimerId;
 
     var answerTimestamp;
+    document.cookie = "qanswered_"+questionData.questionId+"=false";
+
     function verifyAnswer () {
       let ans = String(document.getElementById("answerText").value);
       ans = ans.toLowerCase();
       ans = ans.replace(/\s/g, '');
-    
-    
-      document.cookie = "qanswered_"+questionData.questionId+"=false";
-
       let hash = CryptoJS.MD5(ans);
 
       if(getCookie("qanswered_"+questionData.questionId) == "false") {
