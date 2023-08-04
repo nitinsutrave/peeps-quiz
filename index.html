@@ -205,7 +205,6 @@
     var intervalTimerId;
 
     var answerTimestamp;
-    document.cookie = "qanswered_"+questionData.questionId+"=false";
 
     function verifyAnswer () {
       let ans = String(document.getElementById("answerText").value);
@@ -303,6 +302,8 @@
             questionData.answer = questionDataResponse[0].answer;
             questionData.questionId = questionDataResponse[0].questionId;
             questionData.ttl = questionDataResponse[0].ttl;
+
+            document.cookie = "qanswered_"+questionData.questionId+"=false";
 
             document.getElementById("questionText").innerHTML = questionData.question;
             document.getElementById("questionId").innerHTML = "Question " + questionData.questionId;
