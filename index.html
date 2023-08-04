@@ -215,7 +215,7 @@
       ans = ans.replace(/\s/g, '');
     
     
-      document.cookie = "qanswered_"+questionData.questionId+"=false"
+      document.cookie = "qanswered_"+questionData.questionId+"=false";
 
       let hash = CryptoJS.MD5(ans);
 
@@ -245,11 +245,16 @@
     }
 
     function shareSuccess () {
-      console.log(getCookie("qcount_"+questionData.questionId))
+      if (getCookie("qcount_"+questionData.questionId) == "1") {
+        word = "attempt"
+      }
+      else {
+        word = "attempts"
+      }
       navigator.share({
         title: "Peeps Quiz Answered!",
         //text: "I got the answer for today's daily quiz with " + answerTimestamp + " hours to go! You should try it out too!",
-        text: "I got the answer for today's daily quiz within " + getCookie("qcount_"+questionData.questionId) +" attempts! You should try it out too!",
+        text: "I got the answer for today's daily quiz within " + getCookie("qcount_"+questionData.questionId) + word +"! You should try it out too!",
         url: "https://quiz.rack51.com"
       });
     }
