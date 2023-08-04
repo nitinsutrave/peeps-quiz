@@ -246,10 +246,10 @@
 
     function shareSuccess () {
       if (getCookie("qcount_"+questionData.questionId) == "1") {
-        word = "attempt"
+        word = " attempt"
       }
       else {
-        word = "attempts"
+        word = " attempts"
       }
       navigator.share({
         title: "Peeps Quiz Answered!",
