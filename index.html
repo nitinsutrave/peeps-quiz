@@ -219,7 +219,7 @@
 
       let hash = CryptoJS.MD5(ans);
 
-      if(!getCookie("qanswered_"+questionData.questionId)) {
+      if(getCookie("qanswered_"+questionData.questionId) == "false") {
         count = count + 1
         document.cookie = "qcount_"+questionData.questionId+"="+count;
       }
@@ -227,7 +227,7 @@
       if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
         // alert('You got that right!');
         if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
-        document.cookie = "qanswered_"+questionData.questionId+"= true";
+        document.cookie = "qanswered_"+questionData.questionId+"=true";
         showSuccess();
       } else {
         if (ans.length > 0 && ans.charAt(ans.length - 1) == 's') {
@@ -236,7 +236,7 @@
         }
         if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
           if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
-          document.cookie = "qanswered_"+questionData.questionId+"= true";
+          document.cookie = "qanswered_"+questionData.questionId+"=true";
           showSuccess();
         } else {
           showFailure();
