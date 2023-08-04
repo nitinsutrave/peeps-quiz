@@ -6,7 +6,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/skeleton.css">
@@ -187,7 +187,22 @@
         });
     }
 
+    var count = 0;
     var questionData = {}
+    document.cookie = "qcount_"+questionData.questionId+"="+count;
+    //+";expires = "+questionData.ttl+"; qanswered_"+questionData.questionId+"= false"+";expires = "+questionData.ttl;
+
+    function getCookie(cName) {
+      const name = cName + "=";
+      const cDecoded = decodeURIComponent(document.cookie); //to be careful
+      const cArr = cDecoded .split('; ');
+      let res;
+      cArr.forEach(val => {
+          if (val.indexOf(name) === 0) res = val.substring(name.length);
+      })
+      return res;
+    }
+
     var lastQuestionData = {}
     var intervalTimerId;
 
@@ -201,6 +216,7 @@
       if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
         // alert('You got that right!');
         if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
+        document.cookie = "qanswered_"+questionData.questionId+"= true";
         showSuccess();
       } else {
         if (ans.length > 0 && ans.charAt(ans.length - 1) == 's') {
@@ -209,8 +225,13 @@
         }
         if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
           if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
+          document.cookie = "qanswered_"+questionData.questionId+"= true";
           showSuccess();
         } else {
+          if (!getCookie("qanswered_"+questionData.questionId)) {
+            count = count + 1
+            document.cookie = "qcount_"+questionData.questionId+"="+count;
+          }
           showFailure();
         }
       }
@@ -219,7 +240,8 @@
     function shareSuccess () {
       navigator.share({
         title: "Peeps Quiz Answered!",
-        text: "I got the answer for today's daily quiz with " + answerTimestamp + " hours to go! You should try it out too!",
+        //text: "I got the answer for today's daily quiz with " + answerTimestamp + " hours to go! You should try it out too!",
+        text: "I got the answer for today's daily quiz within " + count + " attempts! You should try it out too!",
         url: "https://quiz.rack51.com"
       });
     }
