@@ -189,8 +189,6 @@
 
     var count = 0;
     var questionData = {}
-    document.cookie = "qcount_"+questionData.questionId+"="+count+";expires = "+questionData.ttl+"; qanswered_"+questionData.questionId+"= false"+";expires = "+questionData.ttl;
-    console.log(document.cookie)
     function getCookie(cName) {
       const name = cName + "=";
       const cDecoded = decodeURIComponent(document.cookie); //to be careful
@@ -210,6 +208,9 @@
       let ans = String(document.getElementById("answerText").value);
       ans = ans.toLowerCase();
       ans = ans.replace(/\s/g, '');
+    
+    
+      document.cookie = "qanswered_"+questionData.questionId+"=false"
 
       let hash = CryptoJS.MD5(ans);
 
