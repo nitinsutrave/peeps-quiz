@@ -189,9 +189,8 @@
 
     var count = 0;
     var questionData = {}
-    document.cookie = "qcount_"+questionData.questionId+"="+count;
-    //+";expires = "+questionData.ttl+"; qanswered_"+questionData.questionId+"= false"+";expires = "+questionData.ttl;
-
+    document.cookie = "qcount_"+questionData.questionId+"="+count+";expires = "+questionData.ttl+"; qanswered_"+questionData.questionId+"= false"+";expires = "+questionData.ttl;
+    console.log(document.cookie)
     function getCookie(cName) {
       const name = cName + "=";
       const cDecoded = decodeURIComponent(document.cookie); //to be careful
@@ -213,6 +212,12 @@
       ans = ans.replace(/\s/g, '');
 
       let hash = CryptoJS.MD5(ans);
+
+      if(!getCookie("qanswered_"+questionData.questionId)) {
+        count = count + 1
+        document.cookie = "qcount_"+questionData.questionId+"="+count;
+      }
+
       if (hash == questionData.answer.toLowerCase().replace(/\s/g, '')) {
         // alert('You got that right!');
         if (!answerTimestamp) answerTimestamp = getTimeLeftString(questionData.ttl)
@@ -228,10 +233,6 @@
           document.cookie = "qanswered_"+questionData.questionId+"= true";
           showSuccess();
         } else {
-          if (!getCookie("qanswered_"+questionData.questionId)) {
-            count = count + 1
-            document.cookie = "qcount_"+questionData.questionId+"="+count;
-          }
           showFailure();
         }
       }
@@ -241,7 +242,7 @@
       navigator.share({
         title: "Peeps Quiz Answered!",
         //text: "I got the answer for today's daily quiz with " + answerTimestamp + " hours to go! You should try it out too!",
-        text: "I got the answer for today's daily quiz within " + count + " attempts! You should try it out too!",
+        text: "I got the answer for today's daily quiz within " + getCookie("qcount_"+questionData.questionId) +" attempts! You should try it out too!",
         url: "https://quiz.rack51.com"
       });
     }
